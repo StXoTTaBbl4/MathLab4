@@ -26,47 +26,63 @@
 </header>
 
 <div class="w3-half w3-right" id="data">
-    <div id="buttons">
-        <p><button id="file-button" class="w3-button w3-round w3-xxlarge">Ввод из файла</button></p>
-        <p><button id="ui-button" class="w3-button w3-round w3-xxlarge">Ввод через UI</button></p>
+    <div id="data-in">
+        <div id="data-in-buttons">
+            <p><button id="file-button" class="w3-button w3-round w3-xxlarge">Ввод из файла</button></p>
+            <p><button id="ui-button" class="w3-button w3-round w3-xxlarge">Ввод через UI</button></p>
+        </div>
+
+        <div id="file-input" style="display: none">
+            <p>
+                Формат данных в файле:<br>
+                N - число точек<br>
+                x_i - аргументы ф-ии<br>
+                y_i - значения ф-ии
+            </p>
+            <div class="popup" onclick="popupFunction()">Пример(тык)
+                <span class="popuptext" id="myPopup">
+                     9<br>
+                     0 1 2 3 4 5 6 7 8 <br>
+                     0 1 2 3 4 5 6 7 8
+                </span>
+            </div>
+
+            <div id="file-input-warning"></div>
+            <input type="file" id="upload-file">
+        </div>
+
+        <div id="ui-input" style="display: none">
+            <div style="display: inline-block">
+                <div id="ui-input-n-warning"></div>
+                <input id="ui-input-n" type="number" step="1" placeholder="8..12"/>
+            </div>
+
+            <div style="display: inline-block">
+                <div id="ui-input-x-warning"></div>
+                <div id="ui-input-x" ></div>
+            </div>
+
+            <div style="display: inline-block">
+                <div id="ui-input-y-warning"></div>
+                <div id="ui-input-y" ></div>
+            </div>
+
+            <button id="ui-input-send-button" class="w3-button w3-round w3-xlarge" style="display: none">Вычислить</button>
+        </div>
     </div>
 
-    <div id="file-input" style="display: none">
-        <p>
-            Формат данных в файле:<br>
-            N - число точек<br>
-            x_i - аргументы ф-ии<br>
-            y_i - значения ф-ии
-        </p>
-        <div class="popup" onclick="popupFunction()">Пример(тык)
-            <span class="popuptext" id="myPopup">
-                 9<br>
-                 0 1 2 3 4 5 6 7 8 <br>
-                 0 1 2 3 4 5 6 7 8
-            </span>
+    <div id="data-out" style="display: none">
+        <div id="data-out-buttons" style="display: inline-block">
+            <button id="data-out-buttons-overview" style="margin: 10px" class="w3-button w3-round w3-large">Обзор</button>
+            <button id="data-out-buttons-linear" style="margin: 10px" class="w3-button w3-round w3-large">Линейная аппр.</button>
+            <button id="data-out-buttons-square" style="margin: 10px" class="w3-button w3-round w3-large">Квадратичная аппр.</button>
+            <button id="data-out-buttons-power" style="margin: 10px" class="w3-button w3-round w3-large">Степенная аппр.</button>
+            <button id="data-out-buttons-exponential" style="margin: 10px" class="w3-button w3-round w3-large">Экспоненциальная аппр.</button>
+            <button id="data-out-buttons-logarithmically" style="margin: 10px" class="w3-button w3-round w3-large">Логарифимическая аппр.</button>
         </div>
+        <table id="data-table">
 
-        <div id="file-input-warning"></div>
-        <input type="file" id="upload-file">
-    </div>
-
-    <div id="ui-input" style="display: none">
-        <div style="display: inline-block">
-            <div id="ui-input-n-warning"></div>
-            <input id="ui-input-n" type="number" step="1" placeholder="8..12"/>
-        </div>
-
-        <div style="display: inline-block">
-            <div id="ui-input-x-warning"></div>
-            <div id="ui-input-x" ></div>
-        </div>
-
-        <div style="display: inline-block">
-            <div id="ui-input-y-warning"></div>
-            <div id="ui-input-y" ></div>
-        </div>
-
-        <button id="ui-input-send-button" class="w3-button w3-round w3-xlarge" style="display: none">Вычислить</button>
+        </table>
     </div>
 
     <div id="reset-button">

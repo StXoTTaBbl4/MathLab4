@@ -30,12 +30,12 @@ $(document).ready(function(){
 });
 
 $('#file-button').on('click',function (){
-    $('#buttons').css('display','none');
+    $('#data-in-buttons').css('display','none');
     $('#file-input').css('display','block');
 });
 
 $('#ui-button').on('click',function (){
-    $('#buttons').css('display','none');
+    $('#data-in-buttons').css('display','none');
     $('#ui-input').css('display','block');
 });
 
@@ -142,7 +142,11 @@ function sendData() {
 function receiveData(json){
     const obj = JSON.parse(json);
     console.log(obj);
+    $('#data-in').css('display','none');
+    $('#data-out').css('display','block');
 }
+
+
 
 //Чтение из файла
 function getFile(event) {
@@ -201,8 +205,46 @@ function checkInput(input){
 }
 //
 
+//наполнение таблицы данными
+function insertData(data){
+    let table = document.querySelector('#data-table');
+
+    for (let subArr of data) {
+        let tr = document.createElement('tr');
+
+        for (let elem of subArr) {
+            let td = document.createElement('td');
+            td.textContent = (typeof elem === 'number' ? Math.round(elem*100000)/100000 : elem);
+            tr.appendChild(td);
+        }
+
+        table.appendChild(tr);
+    }
+}
+
+//Заголовочные строки для таблицы
+function getTableNames(method){
+    switch (method){
+        case "half":{
+            return [["i","a","b","x","F(a)","F(b)","F(x)","\|a+b\|"]];
+        }
+        case "sec":{
+            return [["i","\\(x_{i-1}\\)","\\(x_i\\)","\\(x_{i+1}\\)","\\(F(x_{i+1})\\)","\\(x_{i+1} - x_i\\)"]];
+        }
+        case "iter":{
+            return [["i","\\(x_i\\)","\\(x_{i+1}\\)","\\(\\Phi(x_{i+1})\\)","\\(F(x_{i+1})\\)","\\(x_{i+1} - x_i\\)"]];
+        }
+        case "newton":{
+            return [["i","\\(x_i\\)","\\(y_i\\)","\\(\\delta x\\)","\\(\\delta y\\)","\\(x_{i+1} - x_i\\)","\\(y_{i+1} - y_i\\)"]];
+        }
+        case "newton":{
+            return [["i","\\(x_i\\)","\\(y_i\\)","\\(\\delta x\\)","\\(\\delta y\\)","\\(x_{i+1} - x_i\\)","\\(y_{i+1} - y_i\\)"]];
+        }
+
+    }
+}
+
 //ради одной фунцкии отдельный файл - силшком много чести
 function popupFunction() {
-    let popup = document.getElementById("myPopup");
-    popup.classList.toggle("show");
+    document.getElementById("myPopup").classList.toggle("show");
 }

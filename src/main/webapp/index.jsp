@@ -80,9 +80,9 @@
             <button id="data-out-buttons-exponential" style="margin: 10px" class="w3-button w3-round w3-large">Экспоненциальная аппр.</button>
             <button id="data-out-buttons-logarithmically" style="margin: 10px" class="w3-button w3-round w3-large">Логарифимическая аппр.</button>
         </div>
-        <table id="data-table">
-
-        </table>
+        <div id="data-solo"></div>
+        <table id="data-table"></table>
+        <button id="data-table-save-button" class="w3-button w3-round w3-large">Сохрнаить таблицу</button>
     </div>
 
     <div id="reset-button">

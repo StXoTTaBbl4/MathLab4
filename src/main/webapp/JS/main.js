@@ -4,10 +4,15 @@ const calculator = Desmos.GraphingCalculator(elt, {expressions: false, keypad: f
 let points;
 let allX = [];
 let allY = [];
+let best_ap = 0;
 
 let ui_input_n_warning = $('#ui-input-n-warning');
 let x_values = $('#ui-input-x');
 let y_values = $('#ui-input-y');
+let ui_input_send_button = $('#ui-input-send-button');
+let data_table = $('#data-table');
+
+let response_obj;
 
 //Инициализация для графиков ака костыль номер 0
 $(document).ready(function(){
@@ -53,7 +58,7 @@ $('#upload-file').on('change',function (evt){
 });
 
 $('#ui-input-n').on('input',function () {
-    $('#ui-input-send-button').css('display','none');
+    ui_input_send_button.css('display','none');
     ui_input_n_warning.html("");
     x_values.html("");
     y_values.html("");
@@ -65,7 +70,7 @@ $('#ui-input-n').on('input',function () {
     }
     console.log("points: " + points);
 
-    $('#ui-input-send-button').css('display','block');
+    ui_input_send_button.css('display','block');
     let buff;
     for(let i = 0; i < points; i++){
         buff = "x_"+(i+1);
@@ -77,7 +82,7 @@ $('#ui-input-n').on('input',function () {
 });
 
 //В гробах вертятся n поколенй аккуратного кода давая энергию всему городу
-$('#saveData').on('click',function (){
+$('#data-table-save-button').on('click',function (){
 
     let csv_data = [];
 
@@ -109,7 +114,115 @@ $('#saveData').on('click',function (){
 
     temp_link.click();
     document.body.removeChild(temp_link);
-})
+});
+
+$('#data-out-buttons-overview').on('click',function (){
+    calculator.setBlank();
+    data_table.html("");
+    insertData(getTableNames("overview"),0);
+    let arr = [
+                ["a*x+b", "a0*x^2 + a1*x + a2 ","a*x^b","a*e^bx","a*ln(x)+b"],
+                [response_obj.linearApproximation_SKO,
+                 response_obj.squareApproximation_SKO,
+                 response_obj.powerApproximation_SKO,
+                 response_obj.exponentialApproximation_SKO,
+                 response_obj.logarithmicallyApproximation_SKO,
+                ]
+                ];
+    arr = transpose(arr);
+    findBestAP(arr[1]);
+    insertData(arr,1);
+
+    drawDots(allX,allY,points);
+    drawApproximationLine(response_obj.linearApproximation_a + '*x+' + response_obj.linearApproximation_b);
+    drawApproximationLine(response_obj.squareApproximation_a_0 + '*x^2+' + response_obj.squareApproximation_a_1 +'*x+' +response_obj.squareApproximation_a_2);
+    drawApproximationLine(response_obj.powerApproximation_a + '*(x*' + response_obj.powerApproximation_b + ')');
+    drawApproximationLine(response_obj.exponentialApproximation_a + '*(\\e^x*' + response_obj.exponentialApproximation_b + ')');
+    drawApproximationLine(response_obj.logarithmicallyApproximation_a + '*\\ln(x)+' + response_obj.logarithmicallyApproximation_b);
+
+});
+
+$('#data-out-buttons-linear').on('click',function (){
+    calculator.setBlank();
+    data_table.html("");
+    $('#data-solo').html("<p>S ="+ response_obj.linearApproximation_S +"</p>" +
+        "<p>\\(\\delta\\) ="+ response_obj.linearApproximation_SKO +"</p>"+
+        "<p>a ="+ response_obj.linearApproximation_a +"</p>"+
+        "<p>b ="+ response_obj.linearApproximation_b +"</p>");
+    insertData(getTableNames("not-square"),0);
+    let arr = [allX,allY,response_obj.linearApproximation_y,response_obj.linearApproximation_epsilon]
+    arr = transpose(arr);
+    insertData(arr,0);
+
+    drawDots(allX,allY,points);
+    drawApproximationLine(response_obj.linearApproximation_a + '*x+' + response_obj.linearApproximation_b);
+    });
+
+$('#data-out-buttons-square').on('click',function (){
+    calculator.setBlank();
+    data_table.html("");
+    $('#data-solo').html("<p>S ="+ response_obj.squareApproximation_S +"</p>" +
+        "<p>\\(\\delta\\) ="+ response_obj.squareApproximation_SKO +"</p>"+
+        "<p>\\(a_{0}\\) ="+ response_obj.squareApproximation_a_0 +"</p>"+
+        "<p>\\(a_{1}\\) ="+ response_obj.squareApproximation_a_1 +"</p>"+
+        "<p>\\(a_{2}\\) ="+ response_obj.squareApproximation_a_2 +"</p>");
+    insertData(getTableNames("square"),0);
+    let arr = [allX,allY,response_obj.squareApproximation_y,response_obj.squareApproximation_epsilon]
+    arr = transpose(arr);
+    insertData(arr,0);
+
+    drawDots(allX,allY,points);
+
+    drawApproximationLine(response_obj.squareApproximation_a_0 + '*x^2+' + response_obj.squareApproximation_a_1 +'*x+' +response_obj.squareApproximation_a_2);
+    });
+
+$('#data-out-buttons-power').on('click',function (){
+    calculator.setBlank();
+    data_table.html("");
+    $('#data-solo').html("<p>S ="+ response_obj.powerApproximation_S +"</p>" +
+        "<p>\\(\\delta\\) ="+ response_obj.powerApproximation_SKO +"</p>"+
+        "<p>a ="+ response_obj.powerApproximation_a +"</p>"+
+        "<p>b ="+ response_obj.powerApproximation_b +"</p>");
+    insertData(getTableNames("not-square"),0);
+    let arr = [allX,allY,response_obj.powerApproximation_y,response_obj.powerApproximation_epsilon]
+    arr = transpose(arr);
+    insertData(arr,0);
+
+    drawDots(allX,allY,points);
+    drawApproximationLine(response_obj.powerApproximation_a + '*(x*' + response_obj.powerApproximation_b + ')');
+    });
+
+$('#data-out-buttons-exponential').on('click',function (){
+    calculator.setBlank();
+    data_table.html("");
+    $('#data-solo').html("<p>S ="+ response_obj.exponentialApproximation_S +"</p>" +
+        "<p>\\(\\delta\\) ="+ response_obj.exponentialApproximation_SKO +"</p>"+
+        "<p>a ="+ response_obj.exponentialApproximation_a +"</p>"+
+        "<p>b ="+ response_obj.exponentialApproximation_b +"</p>");
+    insertData(getTableNames("not-square"),0);
+    let arr = [allX,allY,response_obj.exponentialApproximation_y,response_obj.exponentialApproximation_epsilon]
+    arr = transpose(arr);
+    insertData(arr,0);
+
+    drawDots(allX,allY,points);
+    drawApproximationLine(response_obj.exponentialApproximation_a + '*(\\e^x*' + response_obj.exponentialApproximation_b + ')');
+    });
+
+$('#data-out-buttons-logarithmically').on('click',function (){
+    calculator.setBlank();
+    data_table.html("");
+    $('#data-solo').html("<p>S ="+ response_obj.logarithmicallyApproximation_S +"</p>" +
+        "<p>\\(\\delta\\) ="+ response_obj.logarithmicallyApproximation_SKO +"</p>"+
+        "<p>a ="+ response_obj.logarithmicallyApproximation_a +"</p>"+
+        "<p>b ="+ response_obj.logarithmicallyApproximation_b +"</p>");
+    insertData(getTableNames("not-square"),0);
+    let arr = [allX,allY,response_obj.logarithmicallyApproximation_y,response_obj.logarithmicallyApproximation_epsilon]
+    arr = transpose(arr);
+    insertData(arr,0);
+
+    drawDots(allX,allY,points);
+    drawApproximationLine(response_obj.logarithmicallyApproximation_a + '*\\ln(x)+' + response_obj.logarithmicallyApproximation_b);
+    });
 
 function sendData() {
     let obj = {
@@ -140,13 +253,12 @@ function sendData() {
 }
 
 function receiveData(json){
-    const obj = JSON.parse(json);
-    console.log(obj);
+    response_obj = JSON.parse(json);
+    console.log(response_obj);
     $('#data-in').css('display','none');
     $('#data-out').css('display','block');
+    $('#data-out-buttons-overview').click();
 }
-
-
 
 //Чтение из файла
 function getFile(event) {
@@ -160,15 +272,16 @@ function placeFileContent(file) {
         let fileContentArray = content.split(/\r\n|\n/)
 
         if (fileContentArray.length != 3){
-            $('#loadWarning').html("<p style='color: red'>Количество строк - 3</p>");
-        }else {
+            $('#file-input-warning').html("<p style='color: red'>Количество строк - 3</p>");
+        }
+        else {
             if (fileContentArray[0].split(" ").length != 1){
-                console.log("error here")
                 $('#file-input-warning').html("<p style='color: red'>В первой строке - одно число(кол-во точек: 8 <= n <= 12)</p>");
                 return;
             }
             if (fileContentArray[0].match(/[A-z]/) ||fileContentArray[1].match(/[A-z]/) || fileContentArray[2].match(/[A-z]/)){
                 $('#file-input-warning').html("<p style='color: red'>В данных должны быть только числа</p>");
+                return;
             }
 
             points = Math.abs(Math.round(fileContentArray[0].replaceAll(",",".").split(" ")[0]));
@@ -193,20 +306,10 @@ function readFileContent(file) {
         reader.readAsText(file)
     })
 }
-function checkInput(input){
-    let buff
-    for (let i = 0; i < input.length; i++) {
-        buff = input[i];
-        if (buff.split(" ").length > 1){
-            return false
-        }
-    }
-    return true
-}
 //
 
 //наполнение таблицы данными
-function insertData(data){
+function insertData(data, flag){
     let table = document.querySelector('#data-table');
 
     for (let subArr of data) {
@@ -214,37 +317,67 @@ function insertData(data){
 
         for (let elem of subArr) {
             let td = document.createElement('td');
+            if (typeof elem === 'number' && elem == best_ap && flag==1){
+                td.style.background = '#4CAF50 ';
+            }
             td.textContent = (typeof elem === 'number' ? Math.round(elem*100000)/100000 : elem);
             tr.appendChild(td);
         }
 
         table.appendChild(tr);
     }
+
+    MathJax.typeset();
 }
 
 //Заголовочные строки для таблицы
 function getTableNames(method){
     switch (method){
-        case "half":{
-            return [["i","a","b","x","F(a)","F(b)","F(x)","\|a+b\|"]];
+        case "overview":{
+            return [["Function","\\(\\delta\\)"]]
         }
-        case "sec":{
-            return [["i","\\(x_{i-1}\\)","\\(x_i\\)","\\(x_{i+1}\\)","\\(F(x_{i+1})\\)","\\(x_{i+1} - x_i\\)"]];
+        case "not-square":{
+            return [["X","Y","P","\\(\\epsilon\\)"]];
         }
-        case "iter":{
-            return [["i","\\(x_i\\)","\\(x_{i+1}\\)","\\(\\Phi(x_{i+1})\\)","\\(F(x_{i+1})\\)","\\(x_{i+1} - x_i\\)"]];
-        }
-        case "newton":{
-            return [["i","\\(x_i\\)","\\(y_i\\)","\\(\\delta x\\)","\\(\\delta y\\)","\\(x_{i+1} - x_i\\)","\\(y_{i+1} - y_i\\)"]];
-        }
-        case "newton":{
-            return [["i","\\(x_i\\)","\\(y_i\\)","\\(\\delta x\\)","\\(\\delta y\\)","\\(x_{i+1} - x_i\\)","\\(y_{i+1} - y_i\\)"]];
+        case "square":{
+            return [["X","Y","P","\\(\\epsilon\\)"]];
         }
 
     }
 }
 
+function drawDots(x,y,n){
+    for (let i = 0; i < n; i++) {
+        calculator.setExpression({
+            latex: '('+x[i] + ',' + y[i] + ')',
+            pointStyle: 'POINT',
+            color: 'red',
+        });
+    }
+}
+
+function drawApproximationLine(expression){
+    calculator.setExpression({
+        latex: expression,
+    });
+}
+
+//Транспонирование матрицы результатов работы(на стороне серва делать лень было)
+function transpose(matrix) {
+    return matrix[0].map((col, c) => matrix.map((row, r) => matrix[r][c]));
+}
+
 //ради одной фунцкии отдельный файл - силшком много чести
 function popupFunction() {
     document.getElementById("myPopup").classList.toggle("show");
+}
+
+function findBestAP(array){
+
+    best_ap = Number.MAX_VALUE;
+    for (let i = 0; i < array.length; i++) {
+        if (array[i] < best_ap)
+            best_ap = array[i];
+    }
+
 }

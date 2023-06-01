@@ -163,7 +163,7 @@ public class Calculator {
             b = object.getA_1();
         }
         else{
-            System.out.println("powerApproximation error");
+            //System.out.println("powerApproximation error");
             a = -1;
             b = -1;
             return;
@@ -201,7 +201,7 @@ public class Calculator {
             b = object.getA_1();
         }
         else{
-            System.out.println("expApproximation error");
+            //System.out.println("expApproximation error");
             a = -1;
             b = -1;;
             return;

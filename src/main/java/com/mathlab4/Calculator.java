@@ -6,7 +6,7 @@ import com.mathlab4.DataObject.MatrixObject;
 public class Calculator {
 
     static DataToJson dataToJson = new DataToJson();
-
+//убрать нижние подчеркивания, добавить обработку NAN'ов и infinity
     static double sum_x = 0,
                     sum_x_square = 0,
                     sum_x_cube = 0,
